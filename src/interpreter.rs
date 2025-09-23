@@ -6,12 +6,17 @@ pub fn run(ast: Vec<AstNode>) {
 
     for node in ast {
         match node {
+            // String 변수 선언
             AstNode::VarString(name, val) => {
                 vars.insert(name, val);
             }
+
+            // Number 변수 선언
             AstNode::VarNumber(name, val) => {
                 vars.insert(name, val.to_string());
             }
+
+            // Println!
             AstNode::PrintExpr(expr) => {
                 if let Some(v) = vars.get(&expr) {
                     println!("{}", v);
@@ -19,6 +24,8 @@ pub fn run(ast: Vec<AstNode>) {
                     println!("{}", expr);
                 }
             }
+
+            // if
             AstNode::IfStmt(var, op, val, block) => {
                 if let Some(v) = vars.get(&var) {
                     if let Ok(num) = v.parse::<i64>() {

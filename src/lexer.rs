@@ -4,6 +4,9 @@ pub enum Token {
     NumberVar, // 냐옹
     Print,     // 미야옹~
     If,        // 캣!
+    Elif,      // 냥캣!
+    Else,      // 냥
+    While,      // 냥!
     Ident(String),
     StringLit(String),
     Number(i64),
@@ -30,6 +33,9 @@ pub fn tokenize(input: &str) -> Vec<Token> {
             "냐옹" => tokens.push(Token::NumberVar),
             "미야옹~" => tokens.push(Token::Print),
             "캣!" => tokens.push(Token::If),
+            "냥캣!" => tokens.push(Token::Elif),
+            "냥" => tokens.push(Token::Else),
+            "냥!" => tokens.push(Token::While),
             "{" => tokens.push(Token::LBrace),
             "}" => tokens.push(Token::RBrace),
             ";" => tokens.push(Token::Semicolon),
