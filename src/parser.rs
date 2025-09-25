@@ -1,77 +1,85 @@
 use crate::lexer::Token;
 
 #[derive(Debug)]
-pub enum AstNode {
-    VarString(String, String),
-    VarNumber(String, i64),
-    PrintExpr(String),
-    IfStmt(String, String, String, Vec<AstNode>), // var op value, block
+pub enum ASTNode {
+    VarString(String, String), // 변수 이름, 값
+    VarNumber(String, i64),   // 변수 이름, 값
+    PrintExpr(String),      // 출력할 표현식
+    IfStmt(String, String, String, Vec<ASTNode>), // 조건, 참일 때 표현식, 거짓일 때 표현식, 블록
 }
 
-pub fn parse(tokens: Vec<Token>) -> Vec<AstNode> {
+pub fn parse(token: Vec<Token>) -> Vec<ASTNode> {
     let mut ast = Vec::new();
     let mut i = 0;
 
-    while i < tokens.len() {
-        match &tokens[i] {
+    while i < token.len() {
+        match &token[i] {
             Token::StringVar => {
                 if let (Some(Token::Ident(name)), Some(Token::StringLit(val))) =
-                    (tokens.get(i + 1), tokens.get(i + 2))
+                    (token.get(i + 1), token.get(i + 2))
                 {
-                    ast.push(AstNode::VarString(name.clone(), val.clone()));
-                }
-                // 변수 선언 뒤 세미콜론까지 건너뛰기
-                i += 4; // StringVar + Ident + StringLit + Semicolon
+                    ast.push(ASTNode::VarString(name.clone(), val.clone()));
+                } 
+
+                // 변수 선언 후 세미콜론까지 건너뛰기
+                i += 4; 
             }
             Token::NumberVar => {
                 if let (Some(Token::Ident(name)), Some(Token::Number(val))) =
-                    (tokens.get(i + 1), tokens.get(i + 2))
+                    (token.get(i + 1), token.get(i + 2))
                 {
-                    ast.push(AstNode::VarNumber(name.clone(), *val));
-                }
-                // 변수 선언 뒤 세미콜론까지 건너뛰기
-                i += 4; // NumberVar + Ident + Number + Semicolon
+                    ast.push(ASTNode::VarNumber(name.clone(), *val));
+                } 
+
+                // 변수 선언 후 세미콜론까지 건너뛰기
+                i += 4; 
             }
             Token::Print => {
-                if let Some(next) = tokens.get(i + 1) {
+                if let Some(next) = token.get(i + 1) {
                     match next {
                         Token::StringLit(s) | Token::Ident(s) => {
-                            ast.push(AstNode::PrintExpr(s.clone()));
+                            ast.push(ASTNode::PrintExpr(s.clone()));
                         }
                         _ => {}
                     }
                 }
-                // Print + 값 + 세미콜론
+                
+                // print + 값 + 세미콜론
                 i += 3;
-            }
-            Token::If => {
-                if let (Some(Token::Ident(var)), Some(Token::Op(op)), Some(Token::Number(val)), Some(Token::LBrace)) =
-                    (tokens.get(i + 1), tokens.get(i + 2), tokens.get(i + 3), tokens.get(i + 4))
-                {
-                    // '{' 이후 블록 수집
-                    let mut j = i + 5;
-                    let mut block = Vec::new();
-                    while j < tokens.len() && tokens[j] != Token::RBrace {
-                        match &tokens[j] {
-                            Token::Print => {
-                                if let Some(Token::StringLit(s)) = tokens.get(j + 1) {
-                                    block.push(AstNode::PrintExpr(s.clone()));
-                                } else if let Some(Token::Ident(s)) = tokens.get(j + 1) {
-                                    block.push(AstNode::PrintExpr(s.clone()));
-                                }
-                                j += 3; // Print + 값 + 세미콜론
+        }
+
+        Token::If => {
+            if let (Some(Token::Ident(var)), Some(Token::Op(op)), Some(Token::Number(val)), Some(Token::LBrace)) =
+                (token.get(i + 1), token.get(i + 2), token.get(i + 3), token.get(i + 4))
+            {
+                let mut j = i + 5;
+                let mut block = Vec::new();
+
+                // 블록 내 토큰 파싱
+                while j < token.len() && token[j] != Token::RBrace {
+                    match &token[j] {
+                        Token::Print => {
+                            if let Some(Token::StringLit(s)) = token.get(j + 1) {
+                                block.push(ASTNode::PrintExpr(s.clone()));
+                            } else if let Some(Token::Ident(s)) = token.get(j + 1) {
+                                block.push(ASTNode::PrintExpr(s.clone()));
                             }
-                            _ => j += 1,
+                            j += 3; // print + 값 + 세미콜론
                         }
+                        _ => j += 1,
                     }
-                    ast.push(AstNode::IfStmt(var.clone(), op.clone(), val.to_string(), block));
-                    i = j + 1; // RBrace 이후 토큰으로 이동
-                } else {
-                    i += 1;
+                    ast.push(ASTNode::IfStmt(var.clone(), op.clone(), val.to_string(), block));
+                    i = j + 1;
                 }
             }
-            _ => i += 1,
+            else {
+                i += 1;
+            }
+            
         }
+        _ => i += 1,
     }
-    ast
+    
+}
+ast
 }
