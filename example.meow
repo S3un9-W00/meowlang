@@ -7,12 +7,13 @@
 미야옹~ c;
 미야옹~ b;
 미야옹~ a;
+미야옹~ "Hello Meow!";
 
 캣 c > 4 {
     미야옹~ "c는 4보다 큼";
 }
 
-야옹 name "성맘";
-캣 name == "성맘" {
-    미야옹~ "성-맘";
+야옹 name "ez meow";
+캣 name == "ez meow" {
+    미야옹~ "ez meow";
 }
