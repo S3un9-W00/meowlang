@@ -1,0 +1,19 @@
+야옹 a "Hello";
+야옹 b "World!";
+냐옹 c 5;
+냐옹 d 6;
+
+미야옹~ a;
+미야옹~ c;
+미야옹~ b;
+미야옹~ a;
+미야옹~ "Hello Meow!";
+
+캣 c > 4 {
+    미야옹~ "c는 4보다 큼";
+}
+
+야옹 name "ez meow";
+캣 name == "ez meow" {
+    미야옹~ "ez meow";
+}
